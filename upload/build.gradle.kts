@@ -24,6 +24,9 @@ repositories {
 }
 
 dependencies {
+    project(":download")
+    project(":process")
+
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-swagger-jvm")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")

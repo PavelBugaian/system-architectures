@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/download" />
+    <file type="web" url="file://$PROJECT_DIR$/process" />
     <file type="web" url="file://$PROJECT_DIR$/upload" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_23" default="true" project-jdk-name="Kotlin SDK" project-jdk-type="KotlinSDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_23" default="true" />
 </project>
