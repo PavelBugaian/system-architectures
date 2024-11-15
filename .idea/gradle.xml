@@ -4,6 +4,15 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/process" />
+        <option name="gradleJvm" value="temurin-22" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/process" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/upload" />
         <option name="gradleJvm" value="temurin-22" />
         <option name="modules">
