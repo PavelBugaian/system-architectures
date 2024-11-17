@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   db:
     container_name: postgres
@@ -11,11 +10,21 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 1s
-  web:
-    container_name: upload
+  file:
+    container_name: file
     build: ./upload/
     ports:
       - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+  processing:
+    container_name: processing
+    build: ./process/
+    ports:
+      - "8081:8081"
     env_file:
       - .env
     depends_on:
