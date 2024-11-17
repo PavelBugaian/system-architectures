@@ -5,18 +5,25 @@ import kotlinx.coroutines.withContext
 import java.sql.Connection
 import java.sql.Statement
 
-data class FileDto(val name: String, val path: String, val description: String)
-class FileService(private val connection: Connection) {
+class FileService(val connection: Connection) {
 
     companion object {
-        private const val CREATE_TABLE_CITIES =
-            "CREATE TABLE FILES (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), PATH VARCHAR(255), DESCRIPTION VARCHAR(255);"
-        private const val SELECT_FILE_BY_ID = "SELECT name, fileDto FROM files WHERE id = ?"
-        private const val INSERT_FILE = "INSERT INTO files (name, fileDto, description) VALUES (?, ?, ?)"
-        private const val UPDATE_FILE = "UPDATE files SET name = ?, fileDto = ?, description = ? WHERE id = ?"
+        private const val CREATE_TABLE_FILES =
+            "CREATE TABLE FILES (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), PATH VARCHAR(255), DESCRIPTION VARCHAR(255));"
+        private const val SELECT_FILE_BY_ID = "SELECT name, path FROM files WHERE id = ?"
+        private const val INSERT_FILE = "INSERT INTO files (name, path, description) VALUES (?, ?, ?)"
+        private const val UPDATE_FILE = "UPDATE files SET name = ?, path = ?, description = ? WHERE id = ?"
         private const val DELETE_FILE = "DELETE FROM files WHERE id = ?"
     }
-    
+
+    init {
+        val statement = connection.createStatement()
+        val resultSet = statement.executeQuery("SELECT to_regclass('public.files')")
+        if (!resultSet.next() || resultSet.getString(1) == null) {
+            statement.executeUpdate(CREATE_TABLE_FILES)
+        }
+    }
+
     suspend fun create(fileDto: FileDto): Int = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(INSERT_FILE, Statement.RETURN_GENERATED_KEYS)
         statement.setString(1, fileDto.name)
@@ -65,3 +72,9 @@ class FileService(private val connection: Connection) {
         statement.executeUpdate()
     }
 }
+
+data class FileDto(
+    val name: String,
+    val path: String,
+    val description: String,
+)

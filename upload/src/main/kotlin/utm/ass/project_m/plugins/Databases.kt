@@ -5,13 +5,13 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.koin.ktor.ext.inject
 import java.sql.*
 import utm.ass.project_m.data.FileDto
 import utm.ass.project_m.data.FileService
 
 fun Application.configureDatabases() {
-    val dbConnection: Connection = connectToPostgres()
-    val fileService = FileService(dbConnection)
+    val fileService by inject<FileService>()
 
     routing {
         // Create file
@@ -47,13 +47,4 @@ fun Application.configureDatabases() {
             call.respond(HttpStatusCode.OK)
         }
     }
-}
-
-fun Application.connectToPostgres(): Connection {
-    Class.forName("org.postgresql.Driver")
-    val url = environment.config.property("postgres.url").getString()
-    val user = environment.config.property("postgres.user").getString()
-    val password = environment.config.property("postgres.password").getString()
-
-    return DriverManager.getConnection(url, user, password)
 }
