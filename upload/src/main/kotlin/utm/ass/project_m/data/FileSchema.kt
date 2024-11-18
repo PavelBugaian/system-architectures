@@ -10,7 +10,7 @@ class FileService(val connection: Connection) {
     companion object {
         private const val CREATE_TABLE_FILES =
             "CREATE TABLE FILES (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), PATH VARCHAR(255), DESCRIPTION VARCHAR(255));"
-        private const val SELECT_FILE_BY_ID = "SELECT name, path FROM files WHERE id = ?"
+        private const val SELECT_FILE_BY_ID = "SELECT name, path, description FROM files WHERE id = ?"
         private const val INSERT_FILE = "INSERT INTO files (name, path, description) VALUES (?, ?, ?)"
         private const val UPDATE_FILE = "UPDATE files SET name = ?, path = ?, description = ? WHERE id = ?"
         private const val DELETE_FILE = "DELETE FROM files WHERE id = ?"
@@ -47,7 +47,7 @@ class FileService(val connection: Connection) {
 
         if (resultSet.next()) {
             val name = resultSet.getString("name")
-            val fileDto = resultSet.getString("fileDto")
+            val fileDto = resultSet.getString("path")
             val description = resultSet.getString("description")
             return@withContext FileDto(name, fileDto, description)
         } else {

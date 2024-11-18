@@ -6,6 +6,7 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import utm.ass.project_m.data.FileService
+import utm.ass.project_m.domain.GetFileRecordById
 import utm.ass.project_m.domain.HandleMultipartData
 import utm.ass.project_m.domain.UpdateFileRecord
 import utm.ass.project_m.plugins.*
@@ -51,6 +52,7 @@ fun initAppModules(
     single { FileService(get()) }
     single { HandleMultipartData() }
     single { UpdateFileRecord(get()) }
+    single { GetFileRecordById(get()) }
 }
 
 data class AppConfig(

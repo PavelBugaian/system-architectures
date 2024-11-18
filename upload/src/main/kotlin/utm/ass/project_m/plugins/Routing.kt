@@ -7,7 +7,10 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
+import io.ktor.util.reflect.TypeInfo
+import kotlinx.serialization.Serializable
 import org.koin.ktor.ext.inject
+import utm.ass.project_m.domain.GetFileRecordById
 import utm.ass.project_m.domain.HandleMultipartData
 import utm.ass.project_m.domain.UpdateFileRecord
 import java.io.File
@@ -15,9 +18,10 @@ import kotlin.getValue
 
 fun Application.configureRouting() {
     val updateFileRecord by inject<UpdateFileRecord>()
+    val getFileRecordById by inject<GetFileRecordById>()
     val handleMultipartData by inject<HandleMultipartData>()
 
-    val uploadsDirectory = File("uploads\\\\")
+    val uploadsDirectory = File("/usr/src/app/uploads")
     if (!uploadsDirectory.exists()) {
         uploadsDirectory.mkdir()
     }
@@ -25,7 +29,7 @@ fun Application.configureRouting() {
     routing {
         post("upload") {
             val (name, description, fileData) = handleMultipartData.execute(call)
-            val file = File(uploadsDirectory.path + name).apply {
+            val file = File(uploadsDirectory, name).apply {
                 if (exists()) {
                     call.respondText("File already exists", status = HttpStatusCode.BadRequest)
                 }
@@ -33,18 +37,16 @@ fun Application.configureRouting() {
             }
 
             log.debug("File uploaded: $name, $description, ${file.path}")
-
-            updateFileRecord.execute(name, description, file.path)
-
-            call.respondFile(file)
+            val recordId = updateFileRecord.execute(name, file.path, description)
+            call.respond(PostUploadResponse(id = recordId), TypeInfo(PostUploadResponse::class))
         }
 
-        get("file/{fileName}") {
+        get("file/byName/{fileName}") {
             val fileName = call.parameters["fileName"] ?: return@get call.respondText(
                 "Provide file name",
                 status = HttpStatusCode.BadRequest
             )
-            val uploadsDirectory = File("uploads\\\\")
+            val uploadsDirectory = File("/usr/src/app/uploads")
 
             File(uploadsDirectory, fileName).apply {
                 if (exists()) {
@@ -57,8 +59,22 @@ fun Application.configureRouting() {
                 }
             }
         }
+
+        get("file") {
+            val requestId = call.queryParameters["id"] ?: return@get call.respondText(
+                "Provide file id",
+                status = HttpStatusCode.BadRequest
+            )
+            val fileRecord = getFileRecordById.execute(requestId.toInt())
+            call.respond(fileRecord, TypeInfo(UploadedFileData::class))
+        }
     }
 }
+
+@Serializable()
+data class PostUploadResponse(
+    val id: Int,
+)
 
 data class UploadedFileData(
     val name: String,
